@@ -1,0 +1,27 @@
+{
+  // Use the local ESLint and show all lint errors in the Problems tab
+  "eslint.enable": true,
+  "eslint.workingDirectories": ["./"],
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "typescriptreact",
+    "javascriptreact"
+  ],
+  // Optional: auto-fix on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.sortOrder": "foldersNestsFiles",
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.test.ts,${capture}.css,${capture}.mock.ts",
+    "*.tsx": "${capture}.test.tsx,${capture}.test.ts,${capture}.stories.tsx,${capture}.mock.tsx,${capture}.pom.ts,${capture}.helpers.ts,${capture}.types.ts,${capture}.css",
+    ".gitignore": ".editorconfig,.prettierrc.json,eslint.config.mjs",
+    "package.json": "package-lock.json,tsconfig.json,vitest.config.mjs,vitest.workspace.js,vitest.config.ts,vitest.shims.d.ts,vite.config.ts,jest.config.ts,playwright.config.ts",
+    "deno.json": "deno.lock,tsconfig.json,vitest.config.mjs,vitest.workspace.js,vitest.config.ts,vitest.shims.d.ts,vite.config.ts,jest.config.ts,playwright.config.ts",
+    "README.MD": "LICENSE,CHANGELOG.md,CONTRIBUTING.md,*.afdesign,index.ts,poms.ts,mod.ts",
+    "index.ts": "poms.ts,types.ts",
+    "mod.ts": "poms.ts,types.ts"
+  }
+}
