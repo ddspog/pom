@@ -205,7 +205,7 @@ export class HomePagePom extends PageObjectModel<'/home'> {
 
 ### `Mockup` Function
 
-A standalone utility function for creating enhanced browser screenshots with custom HTML overlays.
+Creates enhanced browser screenshots with custom HTML overlays, specifically designed for documentation and presentation purposes.
 
 **Function Signature:**
 ```typescript
@@ -216,16 +216,22 @@ Mockup(options: MockupOptions): Promise<Uint8Array>
 ```typescript
 interface MockupOptions {
   page: Page;           // The Playwright page instance
-  type: 'browser';      // Currently only 'browser' is supported
+  frame: 'browser';      // Currently only 'browser' is supported
   url: string;          // URL to display in the browser address bar
-  screenshotType?: 'png' | 'jpeg';  // Screenshot format
-  quality?: number;     // JPEG quality (0-100)
-  fullPage?: boolean;   // Take full page screenshot
-  clip?: { x: number; y: number; width: number; height: number };
+  
+  // Screenshot options (all optional)
   animations?: 'disabled' | 'allow';
   caret?: 'hide' | 'initial';
-  mask?: any[];         // Elements to mask
+  clip?: { x: number; y: number; width: number; height: number };
+  fullPage?: boolean;   // Take full page screenshot
+  mask?: Array<Locator>; // Elements to mask
+  maskColor?: string;   // Color of mask overlay
+  omitBackground?: boolean; // Remove white background
+  quality?: number;     // JPEG quality (0-100)
+  scale?: 'css' | 'device'; // Screenshot scale
+  style?: string;       // CSS to apply during screenshot
   timeout?: number;     // Screenshot timeout
+  type?: 'png' | 'jpeg';  // Screenshot format
 }
 ```
 

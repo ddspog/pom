@@ -56,22 +56,32 @@ export type MockupOptions = ScreenshotOptions & BrowserOptions & {
 /**
  * Creates a mockup screenshot with a browser window overlay.
  * 
- * This function takes a screenshot of the provided page, then creates a new page 
- * with custom HTML that represents a stylized browser window. The HTML includes
- * a top bar with traffic lights, an address bar displaying the provided URL,
- * and the original screenshot as the page content.
+ * This function takes a screenshot of the provided page using the specified options,
+ * then creates a stylized browser window frame around it. The frame includes macOS-style
+ * traffic lights, an address bar with the provided URL, and embeds the original screenshot
+ * as the page content.
  * 
- * @param options - Configuration options including page, frame, URL, and screenshot options
- * @returns Promise<Uint8Array> - The final mockup screenshot as a buffer
+ * The function supports all standard Playwright screenshot options including fullPage,
+ * quality, type, clipping, masking, and more.
+ * 
+ * @param options - Configuration object containing the page, frame type, URL, and screenshot options
+ * @returns Promise<Uint8Array> - The final mockup screenshot as a PNG buffer
  * 
  * @example
  * ```typescript
+ * import { Mockup } from '@ddspog/pom';
+ * 
+ * // Create a browser window mockup with full page screenshot
  * const mockupScreenshot = await Mockup({
  *   page,
  *   frame: 'browser',
  *   url: 'https://example.com',
- *   fullPage: true
+ *   fullPage: true,
+ *   type: 'png'
  * });
+ * 
+ * // Save the enhanced screenshot
+ * await Deno.writeFile('docs/screenshot.png', mockupScreenshot);
  * ```
  */
 export async function Mockup({ page, url, frame: _, path, type, ...options }: MockupOptions): Promise<Uint8Array> {

@@ -1,6 +1,3 @@
-*.zip
-/tmp/
-
 # Deno Project
 /node_modules
 package.json
