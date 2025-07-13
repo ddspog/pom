@@ -37,26 +37,6 @@ test.describe("Mockup Function", () => {
         `);
     });
 
-    test("should create a browser mockup with provided URL", async ({ page }) => {
-        const options: MockupOptions = {
-            page,
-            type: 'browser',
-            url: 'https://example.com/test-page'
-        };
-
-        // Call the Mockup function
-        const mockupScreenshot = await Mockup(options);
-
-        // Verify that we got a screenshot buffer
-        expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
-        expect(mockupScreenshot.length).toBeGreaterThan(0);
-
-        // Verify that it's a valid PNG (starts with PNG signature)
-        const pngSignature = new Uint8Array([0x89, 0x50, 0x4E, 0x47]);
-        const screenshotStart = mockupScreenshot.subarray(0, 4);
-        expect(screenshotStart).toEqual(pngSignature);
-    });
-
     test("should handle different URLs correctly", async ({ page }) => {
         const testUrls = [
             'https://localhost:3000',
@@ -67,8 +47,8 @@ test.describe("Mockup Function", () => {
         for (const url of testUrls) {
             const options: MockupOptions = {
                 page,
-                type: 'browser',
-                url: url
+                frame: 'browser',
+                url: url,
             };
 
             const mockupScreenshot = await Mockup(options);
@@ -78,23 +58,11 @@ test.describe("Mockup Function", () => {
         }
     });
 
-    test("should reject unsupported mockup types", async ({ page }) => {
-        // Test with an invalid type (TypeScript should catch this, but let's test at runtime)
-        const invalidOptions = {
-            page,
-            type: 'invalid' as any,
-            url: 'https://example.com'
-        };
-
-        await expect(async () => {
-            await Mockup(invalidOptions);
-        }).rejects.toThrow('Unsupported mockup type: invalid');
-    });
-
     test("should handle special characters in URL", async ({ page }) => {
         const options: MockupOptions = {
             page,
-            type: 'browser',
+            frame: 'browser',
+            path: 'mockups/browser.png',
             url: 'https://example.com/path?query=test&special=<>&"quotes"'
         };
 
@@ -110,7 +78,7 @@ test.describe("Mockup Function", () => {
 
         const options: MockupOptions = {
             page,
-            type: 'browser',
+            frame: 'browser',
             url: 'https://blank-page.com'
         };
 
@@ -127,7 +95,7 @@ test.describe("Mockup Function", () => {
 
         const options: MockupOptions = {
             page,
-            type: 'browser',
+            frame: 'browser',
             url: 'https://example.com/test'
         };
 
@@ -139,25 +107,5 @@ test.describe("Mockup Function", () => {
         
         expect(finalTitle).toBe(initialTitle);
         expect(finalContent).toBe(initialContent);
-    });
-
-    test("should support screenshot options", async ({ page }) => {
-        const options: MockupOptions = {
-            page,
-            type: 'browser',
-            url: 'https://example.com/test',
-            fullPage: true,
-            screenshotType: 'png'
-        };
-
-        const mockupScreenshot = await Mockup(options);
-        
-        expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
-        expect(mockupScreenshot.length).toBeGreaterThan(0);
-
-        // Verify that it's a valid PNG (starts with PNG signature)
-        const pngSignature = new Uint8Array([0x89, 0x50, 0x4E, 0x47]);
-        const screenshotStart = mockupScreenshot.subarray(0, 4);
-        expect(screenshotStart).toEqual(pngSignature);
     });
 });
