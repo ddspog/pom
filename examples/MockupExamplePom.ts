@@ -20,7 +20,8 @@ export class MockupExamplePom extends ComponentObjectModel {
     async createBrowserMockup(url: string): Promise<Uint8Array> {
         this.log(`createBrowserMockup("${url}")`);
         
-        return await Mockup(this.page, {
+        return await Mockup({
+            page: this.page,
             type: 'browser',
             url: url
         });

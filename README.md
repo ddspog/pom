@@ -209,14 +209,23 @@ A standalone utility function for creating enhanced browser screenshots with cus
 
 **Function Signature:**
 ```typescript
-Mockup(page: Page, options: MockupOptions): Promise<Uint8Array>
+Mockup(options: MockupOptions): Promise<Uint8Array>
 ```
 
 **Types:**
 ```typescript
 interface MockupOptions {
-  type: 'browser';  // Currently only 'browser' is supported
-  url: string;      // URL to display in the browser address bar
+  page: Page;           // The Playwright page instance
+  type: 'browser';      // Currently only 'browser' is supported
+  url: string;          // URL to display in the browser address bar
+  screenshotType?: 'png' | 'jpeg';  // Screenshot format
+  quality?: number;     // JPEG quality (0-100)
+  fullPage?: boolean;   // Take full page screenshot
+  clip?: { x: number; y: number; width: number; height: number };
+  animations?: 'disabled' | 'allow';
+  caret?: 'hide' | 'initial';
+  mask?: any[];         // Elements to mask
+  timeout?: number;     // Screenshot timeout
 }
 ```
 
@@ -237,9 +246,11 @@ test('create mockup screenshot', async ({ page }) => {
   await page.goto('https://example.com');
   
   // Create a browser window mockup
-  const mockupScreenshot = await Mockup(page, {
+  const mockupScreenshot = await Mockup({
+    page,
     type: 'browser',
-    url: 'https://example.com'
+    url: 'https://example.com',
+    fullPage: true
   });
   
   // Save or use the mockup screenshot
@@ -251,7 +262,8 @@ test('create mockup screenshot', async ({ page }) => {
 ```typescript
 class DocumentationPom extends ComponentObjectModel {
   async createPageMockup(displayUrl: string): Promise<Uint8Array> {
-    return await Mockup(this.page, {
+    return await Mockup({
+      page: this.page,
       type: 'browser',
       url: displayUrl
     });
