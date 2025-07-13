@@ -2,3 +2,4 @@
 *.zip
 /tmp/
 package-lock.json
+package.json
