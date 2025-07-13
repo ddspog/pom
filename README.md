@@ -13,7 +13,7 @@ This project provides a robust, extensible base for building Page Object Models 
 This is a Deno package. Import it directly:
 
 ```typescript
-import { ComponentObjectModel, PageObjectModel } from "jsr:@ddspog/pom";
+import { ComponentObjectModel, PageObjectModel, Mockup } from "jsr:@ddspog/pom";
 ```
 
 Or add to your `deno.json`:
@@ -200,6 +200,72 @@ export class HomePagePom extends PageObjectModel<'/home'> {
   }
 }
 ```
+
+---
+
+### `Mockup` Function
+
+A standalone utility function for creating enhanced browser screenshots with custom HTML overlays.
+
+**Function Signature:**
+```typescript
+Mockup(page: Page, options: MockupOptions): Promise<Uint8Array>
+```
+
+**Types:**
+```typescript
+interface MockupOptions {
+  type: 'browser';  // Currently only 'browser' is supported
+  url: string;      // URL to display in the browser address bar
+}
+```
+
+**What it does:**
+1. Takes a screenshot of the current page
+2. Creates a new page with custom HTML that represents a stylized browser window
+3. Embeds the original screenshot as the page content
+4. Displays the provided URL in a realistic browser address bar
+5. Returns the final mockup screenshot
+
+**Example Usage:**
+```typescript
+import { test } from '@playwright/test';
+import { Mockup } from '@ddspog/pom';
+
+test('create mockup screenshot', async ({ page }) => {
+  // Navigate to your page and set up content
+  await page.goto('https://example.com');
+  
+  // Create a browser window mockup
+  const mockupScreenshot = await Mockup(page, {
+    type: 'browser',
+    url: 'https://example.com'
+  });
+  
+  // Save or use the mockup screenshot
+  await Deno.writeFile('mockup.png', mockupScreenshot);
+});
+```
+
+**Using in POM Classes:**
+```typescript
+class DocumentationPom extends ComponentObjectModel {
+  async createPageMockup(displayUrl: string): Promise<Uint8Array> {
+    return await Mockup(this.page, {
+      type: 'browser',
+      url: displayUrl
+    });
+  }
+}
+```
+
+**Features:**
+- 🎨 Realistic browser window styling with traffic lights (red, yellow, green buttons)
+- 🔒 Secure URL indicator with lock icon
+- 📱 Responsive design that works with various screenshot sizes
+- 🧹 Automatic cleanup (closes temporary pages)
+- 💾 Returns Uint8Array for easy file saving or further processing
+- ⚡ Fast execution using Playwright's screenshot API
 
 ---
 
