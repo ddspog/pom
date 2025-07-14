@@ -134,10 +134,10 @@ async function getImageDimensions(dataURL: string, page: Page): Promise<{ width:
         await measurePage.waitForLoadState('networkidle');
         
         const dimensions = await measurePage.evaluate(() => {
-            const img = document.getElementById('measure-img') as HTMLImageElement;
+            const img = (globalThis as any).document.getElementById('measure-img');
             return {
-                width: img.naturalWidth,
-                height: img.naturalHeight
+                width: img?.naturalWidth || 800,
+                height: img?.naturalHeight || 600
             };
         });
         
@@ -195,3 +195,4 @@ function MountBrowserMockup(url: string, dataURL: string, dimensions: { width: n
     </div>
 </body>
 </html>`;
+}
