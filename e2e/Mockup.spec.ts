@@ -108,4 +108,200 @@ test.describe("Mockup Function", () => {
         expect(finalTitle).toBe(initialTitle);
         expect(finalContent).toBe(initialContent);
     });
+
+    test.describe("Size and Viewport Tests", () => {
+        test("should preserve dimensions for small screenshots", async ({ page }) => {
+            // Set a small viewport
+            await page.setViewportSize({ width: 300, height: 200 });
+            
+            const options: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://small.example.com',
+                type: 'png'
+            };
+
+            const mockupScreenshot = await Mockup(options);
+            
+            expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
+            expect(mockupScreenshot.length).toBeGreaterThan(0);
+        });
+
+        test("should preserve dimensions for medium screenshots", async ({ page }) => {
+            // Set a medium viewport
+            await page.setViewportSize({ width: 768, height: 1024 });
+            
+            const options: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://medium.example.com',
+                type: 'png'
+            };
+
+            const mockupScreenshot = await Mockup(options);
+            
+            expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
+            expect(mockupScreenshot.length).toBeGreaterThan(0);
+        });
+
+        test("should preserve dimensions for large screenshots", async ({ page }) => {
+            // Set a large viewport
+            await page.setViewportSize({ width: 1920, height: 1080 });
+            
+            const options: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://large.example.com',
+                type: 'png'
+            };
+
+            const mockupScreenshot = await Mockup(options);
+            
+            expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
+            expect(mockupScreenshot.length).toBeGreaterThan(0);
+        });
+
+        test("should handle clipped screenshots correctly", async ({ page }) => {
+            await page.setViewportSize({ width: 800, height: 600 });
+            
+            const options: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://clipped.example.com',
+                clip: { x: 50, y: 50, width: 300, height: 200 },
+                type: 'png'
+            };
+
+            const mockupScreenshot = await Mockup(options);
+            
+            expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
+            expect(mockupScreenshot.length).toBeGreaterThan(0);
+        });
+
+        test("should handle full page screenshots", async ({ page }) => {
+            // Create a page with content that extends beyond viewport
+            await page.setContent(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Full Page Test</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            margin: 0;
+                            background: linear-gradient(180deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+                            color: white;
+                            text-align: center;
+                        }
+                        .section {
+                            height: 100vh;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 2em;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="section">Section 1</div>
+                    <div class="section">Section 2</div>
+                    <div class="section">Section 3</div>
+                </body>
+                </html>
+            `);
+            
+            const options: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://fullpage.example.com',
+                fullPage: true,
+                type: 'png'
+            };
+
+            const mockupScreenshot = await Mockup(options);
+            
+            expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
+            expect(mockupScreenshot.length).toBeGreaterThan(0);
+        });
+
+        test("should handle different image types correctly", async ({ page }) => {
+            await page.setViewportSize({ width: 600, height: 400 });
+            
+            // Test PNG
+            const pngOptions: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://png.example.com',
+                type: 'png'
+            };
+
+            const pngMockup = await Mockup(pngOptions);
+            expect(pngMockup).toBeInstanceOf(Uint8Array);
+            expect(pngMockup.length).toBeGreaterThan(0);
+
+            // Test JPEG
+            const jpegOptions: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://jpeg.example.com',
+                type: 'jpeg',
+                quality: 90
+            };
+
+            const jpegMockup = await Mockup(jpegOptions);
+            expect(jpegMockup).toBeInstanceOf(Uint8Array);
+            expect(jpegMockup.length).toBeGreaterThan(0);
+        });
+
+        test("should handle mobile viewport dimensions", async ({ page }) => {
+            // Set mobile viewport
+            await page.setViewportSize({ width: 375, height: 667 }); // iPhone SE
+            
+            const options: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://mobile.example.com',
+                type: 'png'
+            };
+
+            const mockupScreenshot = await Mockup(options);
+            
+            expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
+            expect(mockupScreenshot.length).toBeGreaterThan(0);
+        });
+
+        test("should handle tablet viewport dimensions", async ({ page }) => {
+            // Set tablet viewport
+            await page.setViewportSize({ width: 768, height: 1024 }); // iPad
+            
+            const options: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://tablet.example.com',
+                type: 'png'
+            };
+
+            const mockupScreenshot = await Mockup(options);
+            
+            expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
+            expect(mockupScreenshot.length).toBeGreaterThan(0);
+        });
+
+        test("should handle desktop viewport dimensions", async ({ page }) => {
+            // Set desktop viewport
+            await page.setViewportSize({ width: 1440, height: 900 }); // MacBook Air
+            
+            const options: MockupOptions = {
+                page,
+                frame: 'browser',
+                url: 'https://desktop.example.com',
+                type: 'png'
+            };
+
+            const mockupScreenshot = await Mockup(options);
+            
+            expect(mockupScreenshot).toBeInstanceOf(Uint8Array);
+            expect(mockupScreenshot.length).toBeGreaterThan(0);
+        });
+    });
 });

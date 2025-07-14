@@ -91,11 +91,15 @@ export async function Mockup({ page, url, frame: _, path, type, ...options }: Mo
     };base64,${
         btoa(new Uint8Array(screenshot).reduce((data, byte) => data + String.fromCharCode(byte), ''))
     }`;
+    
+    // Get screenshot dimensions to preserve size in the final mockup
+    const screenshotDimensions = await getImageDimensions(dataURL, page);
+    
     const mockupPage = await page.context().newPage();
 
     try {
         await mockupPage.setContent(
-            MountBrowserMockup(url, dataURL),
+            MountBrowserMockup(url, dataURL, screenshotDimensions),
             { waitUntil: 'domcontentloaded' }
         );
         return await mockupPage
@@ -107,13 +111,51 @@ export async function Mockup({ page, url, frame: _, path, type, ...options }: Mo
 }
 
 /**
+ * Extracts dimensions from an image data URL using a temporary page
+ * 
+ * @param dataURL - The data URL of the image
+ * @param page - A Playwright page to use for measurement
+ * @returns Promise with width and height of the image
+ */
+async function getImageDimensions(dataURL: string, page: Page): Promise<{ width: number; height: number }> {
+    const measurePage = await page.context().newPage();
+    
+    try {
+        await measurePage.setContent(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Measure</title></head>
+            <body>
+                <img id="measure-img" src="${dataURL}">
+            </body>
+            </html>
+        `);
+        
+        await measurePage.waitForLoadState('networkidle');
+        
+        const dimensions = await measurePage.evaluate(() => {
+            const img = document.getElementById('measure-img') as HTMLImageElement;
+            return {
+                width: img.naturalWidth,
+                height: img.naturalHeight
+            };
+        });
+        
+        return dimensions;
+    } finally {
+        await measurePage.close();
+    }
+}
+
+/**
  * Generates the HTML content for the browser window mockup.
  * 
  * @param url - The URL to display in the address bar
  * @param dataURL - The data URL of the screenshot to embed
+ * @param dimensions - The dimensions of the original screenshot to preserve
  * @returns The complete HTML string for the mockup
  */
-function MountBrowserMockup(url: string, dataURL: string): string {
+function MountBrowserMockup(url: string, dataURL: string, dimensions: { width: number; height: number }): string {
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -131,7 +173,7 @@ function MountBrowserMockup(url: string, dataURL: string): string {
     </style>
 </head>
 <body>
-    <div aria-label="Browser Window" style="border: 1px solid #ddd; border-radius: 8px; margin: 16px; max-width: 600px; font-family: Arial, sans-serif; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div aria-label="Browser Window" style="border: 1px solid #ddd; border-radius: 8px; margin: 16px; width: ${dimensions.width + 2}px; font-family: Arial, sans-serif; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
         <div aria-label="Browser Top Bar" style="background: #f5f5f5; border-bottom: 1px solid #ddd; border-radius: 8px 8px 0 0; padding: 8px 12px; display: flex; align-items: center;">
             <div aria-label="Traffic Lights" style="display: flex; gap: 6px; margin-right: 12px;">
                 <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f57;"></div>
@@ -146,11 +188,10 @@ function MountBrowserMockup(url: string, dataURL: string): string {
         </div>
         <div aria-label="Browser Content" style="padding: 0;">
             <img alt="Page Screenshot" 
-                style="width: 100%; height: auto; display: block; border-radius: 0 0 8px 8px;"
+                style="width: ${dimensions.width}px; height: ${dimensions.height}px; display: block; border-radius: 0 0 8px 8px;"
                 src="${dataURL}" 
             >
         </div>
     </div>
 </body>
 </html>`;
-}
