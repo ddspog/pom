@@ -134,7 +134,7 @@ async function getImageDimensions(dataURL: string, page: Page): Promise<{ width:
         await measurePage.waitForLoadState('networkidle');
         
         const dimensions = await measurePage.evaluate(() => {
-            const img = (globalThis as any).document.getElementById('measure-img');
+            const img = globalThis.document.getElementById('measure-img') as HTMLImageElement | null;
             return {
                 width: img?.naturalWidth || 800,
                 height: img?.naturalHeight || 600
