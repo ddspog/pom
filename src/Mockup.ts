@@ -51,6 +51,8 @@ type BrowserOptions = {
 export type MockupOptions = ScreenshotOptions & BrowserOptions & {
     /** The Playwright page instance to take a screenshot of */
     page: Page;
+    /** Options for the focus style */
+    focus?: StyleForFocusOptions;
 }
 
 /**
@@ -84,8 +86,8 @@ export type MockupOptions = ScreenshotOptions & BrowserOptions & {
  * await Deno.writeFile('docs/screenshot.png', mockupScreenshot);
  * ```
  */
-export async function Mockup({ page, url, frame: _, path, type, ...options }: MockupOptions): Promise<Uint8Array> {
-    const screenshot = await page.screenshot({ type, ...options });
+export async function Mockup({ page, url, frame: _, focus, path, type, ...options }: MockupOptions): Promise<Uint8Array> {
+    const screenshot = await page.screenshot({ type, style: (focus ? StyleForFocus(focus) : undefined), ...options });
     const dataURL = `data:${
         type === 'jpeg' ? 'image/jpeg' : 'image/png'
     };base64,${
@@ -93,7 +95,7 @@ export async function Mockup({ page, url, frame: _, path, type, ...options }: Mo
     }`;
     
     // Get screenshot dimensions to preserve size in the final mockup
-    const screenshotDimensions = await getImageDimensions(dataURL, page);
+    const screenshotDimensions = await GetImageDimensions(dataURL, page);
     
     const mockupPage = await page.context().newPage();
 
@@ -110,6 +112,34 @@ export async function Mockup({ page, url, frame: _, path, type, ...options }: Mo
     }
 }
 
+type StyleForFocusOptions = {
+    /** The CSS selector to apply the focus style to */
+    selector: string;
+    /** The backdrop style for the focused element */
+    backdrop?: {
+        opacity: number;
+    },
+    /** The highlight style for the focused element */
+    highlight?: {
+        /** The color of the highlight border, in CSS color format */
+        color: string;
+        /** The radius of the highlight border, in pixels */
+        radius: number
+    }
+}
+
+function StyleForFocus({ selector, backdrop = { opacity: 0.7 }, highlight = { color: '#dc2626', radius: 2 } }: StyleForFocusOptions) : string {
+    return `body :has(> ${selector}) {
+        :not(${selector}, ${selector} *) {
+            ${backdrop.opacity ? `opacity: ${backdrop.opacity};` : ''}
+        }
+
+        ${highlight.radius > 0 ? `${selector} {
+            box-shadow: inset 0px 0px 0px ${highlight.radius}px ${highlight.color};
+        }` : ''}
+    }`;
+}
+
 /**
  * Extracts dimensions from an image data URL using a temporary page
  * 
@@ -117,7 +147,7 @@ export async function Mockup({ page, url, frame: _, path, type, ...options }: Mo
  * @param page - A Playwright page to use for measurement
  * @returns Promise with width and height of the image
  */
-async function getImageDimensions(dataURL: string, page: Page): Promise<{ width: number; height: number }> {
+async function GetImageDimensions(dataURL: string, page: Page): Promise<{ width: number; height: number }> {
     const measurePage = await page.context().newPage();
     
     try {

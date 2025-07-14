@@ -62,7 +62,6 @@ test.describe("Mockup Function", () => {
         const options: MockupOptions = {
             page,
             frame: 'browser',
-            path: 'mockups/browser.png',
             url: 'https://example.com/path?query=test&special=<>&"quotes"'
         };
 

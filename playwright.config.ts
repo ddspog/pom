@@ -7,7 +7,11 @@ export default defineConfig({
     // Configure projects for major browsers.
     projects: [
         {
-            name: 'chromium',
+            name: 'chromium', testMatch: /.*\.spec\.ts/,
+            use: { ...devices['Desktop Chrome'] },
+        },
+        {
+            name: 'documentation', testMatch: /.*\.doc\.ts/,
             use: { ...devices['Desktop Chrome'] },
         },
     ],
