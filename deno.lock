@@ -49,12 +49,6 @@
     "dependencies": [
       "jsr:@std/assert@1",
       "npm:@playwright/test@^1.54.1"
-    ],
-    "packageJson": {
-      "dependencies": [
-        "npm:@playwright/test@^1.54.1",
-        "npm:playwright@^1.54.1"
-      ]
-    }
+    ]
   }
 }
