@@ -32,9 +32,9 @@ test.describe("Mockup Function", () => {
                     <p>This is a test page for the Mockup function.</p>
                     <button>Click me!</button>
                 </div>
-                <footer>
+                <section>
                     <p>Footer content goes here</p>
-                </footer>
+                </section>
             </body>
             </html>
         `);
@@ -55,7 +55,7 @@ test.describe("Mockup Function", () => {
             frame: 'browser',
             path: 'mockups/browser.png',
             url: 'https://example.com/path?query=test&special=<>&"quotes"',
-            focus: { selector: 'button', backdrop: { opacity: 0.2 }  }
+            focus: { selector: 'button', backdrop: { opacity: 0.7 }  }
         });
     });
 });

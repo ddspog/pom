@@ -129,21 +129,10 @@ type StyleForFocusOptions = {
 }
 
 function StyleForFocus({ selector, backdrop = { opacity: 0.7 }, highlight = { color: '#dc2626', radius: 2 } }: StyleForFocusOptions) : string {
-    return `body {
-        :has(> ${selector}) {
-            :not(${selector}, ${selector} *) {
-                ${backdrop.opacity ? `opacity: ${backdrop.opacity};` : ''}
-            }
-
-            ${selector} {
-                opacity: 1;
-                ${highlight.radius > 0 ? `box-shadow: inset 0px 0px 0px ${highlight.radius}px ${highlight.color};` : ''}
-            }
-        }
-
-        :not(:has(${selector})) {
-            ${backdrop.opacity ? `opacity: ${backdrop.opacity};` : ''}
-        }
+    return `${selector} {
+        ${highlight.radius > 0 ? `box-shadow: inset 0px 0px 0px ${highlight.radius}px ${highlight.color};` : ''}
+        ${backdrop.opacity ? `outline: 2000px solid rgba(0, 0, 0, ${backdrop.opacity});` : ''}
+        z-index: 1000;
     }`;
 }
 
