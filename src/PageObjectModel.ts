@@ -40,4 +40,15 @@ export abstract class PageObjectModel<TURL extends string> extends ComponentObje
         this.log(`goto(\"${this.url}\")`);
         await this.page.goto(this.url);
     }
+
+    /**
+     * Reloads the current page.
+     *
+     * @remarks
+     * This method uses Playwright's `page.reload()` to refresh the page.
+     */
+    async reload(): Promise<void> {
+        this.log('reload()');
+        await this.page.reload();
+    }
 }
